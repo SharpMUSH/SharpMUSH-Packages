@@ -1,0 +1,8 @@
+# Copy to community/<your-repo-slug>.yaml and open a pull request.
+# Files starting with _ are ignored by games.
+name: Your Repo Display Name
+url: https://github.com/you/your-package-repo
+description: "One line about what your packages provide."
+# branch: main                      # optional — recommended branch
+# maintainers: [You]                # optional
+# homepage: https://example.com     # optional

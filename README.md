@@ -42,6 +42,14 @@ each README explains which manifest features it demonstrates. The curated
 default softcode experience (scene-system, bboard, chargen, events, finger,
 http-hooks) will land here as those systems mature.
 
+## Community repos
+
+[`community/`](community/) is the curated directory of accepted
+**community package repos**. Games ping it from the admin panel to discover
+sources beyond this repo, with the community trust tier and rendered READMEs.
+Want yours listed? See [community/README.md](community/README.md) — it's a
+one-file pull request.
+
 ## Repo structure & releases
 
 A package is a directory containing a `package.yaml` manifest; the root
