@@ -1,0 +1,43 @@
+package: bbs-lite
+version: 0.9.0-beta
+authors: [SharpMUSH]
+description: "Tiny bulletin board demonstrating dependencies, configure refs, well-known refs, and locks."
+convention_prefix: BBSL_
+
+depends:
+  - package: who-where
+    version: ">=1.0 <2.0"
+    source:
+      repo: https://github.com/SharpMUSH/sharpmush-packages
+      path: who-where/
+      branch: main
+
+configure:
+  bbs_storage:
+    label: "Object that stores board posts (any thing the game owns)"
+
+objects:
+  - ref: bbsl_global
+    type: thing
+    name: BBS-Lite Global Object
+    attributes:
+      CMD_+BBPOST:
+        value: "$+bbpost *:&POST_[secs()] ?bbs_storage=%0; @pemit %#=Posted."
+      CMD_+BBREAD:
+        value: "$+bbread:@pemit %#=[u(~bbsl_functions/BBSL_FN_LIST,?bbs_storage)]"
+
+  - ref: bbsl_functions
+    type: thing
+    name: BBS-Lite Function Object
+    flags: [no_command]
+    locks:
+      use: "~bbsl_global"
+    attributes:
+      BBSL_FN_LIST:
+        value: "firstof(iter(lattr(%0/POST_*),%r[get(%0/%i0)],,),No posts yet.)"
+        flags: [no_clone]
+
+  - ref: bbsl_lounge
+    type: room
+    name: BBS Lounge
+    parent: $room_zero

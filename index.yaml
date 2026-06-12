@@ -1,0 +1,8 @@
+name: SharpMUSH Packages
+description: Official softcode packages for SharpMUSH.
+packages:
+  - hello-world/
+  - path: who-where/
+    name: Who/Where
+  - path: bbs-lite/
+    name: BBS Lite
