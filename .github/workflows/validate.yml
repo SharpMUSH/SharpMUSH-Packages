@@ -1,0 +1,53 @@
+name: Validate packages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    # TODO: drop continue-on-error once the format v2 parser
+    # (feature/package-manager) merges to SharpMUSH main.
+    continue-on-error: true
+    steps:
+      - name: Checkout packages
+        uses: actions/checkout@v4
+        with:
+          path: packages
+
+      - name: Checkout SharpMUSH
+        uses: actions/checkout@v4
+        with:
+          repository: SharpMUSH/SharpMUSH
+          ref: ${{ vars.SHARPMUSH_REF || 'main' }}
+          path: sharpmush
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Validate manifests (strict)
+        run: dotnet run --project sharpmush/tools/PackageValidator -- packages --strict
+
+  immutable-tags:
+    # Release tags (<pkg>/vX.Y.Z) are immutable: this job fails any push that
+    # moves or deletes one. Combine with a repository ruleset for enforcement.
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check release tags still reachable
+        run: |
+          set -e
+          for tag in $(git tag -l '*/v*'); do
+            if ! git merge-base --is-ancestor "$tag" HEAD; then
+              echo "::error::Release tag $tag is no longer reachable from main (history rewrite?)"
+              exit 1
+            fi
+          done
+          echo "All release tags reachable."
